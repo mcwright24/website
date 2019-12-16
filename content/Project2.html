@@ -1,0 +1,462 @@
+---
+title: 'Project 2: Modeling, Testing, and Predicting'
+author: "Michael Wright"
+date: '11/25/19'
+output:
+  html_document:
+    toc: yes
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+  pdf_document:
+    toc: yes
+---
+
+
+
+<p>##Introduction
+The dataset I used, TexasCountyData, was created by merging the data from Texas Education and Employment by county (CountyEducationEmployment) and Texas Income by county (CountyIncome), both obtained from the Texas Association of Counties. The Texas Education and Employment dataset contains the proportion of individuals in each county that have obtained a high school degree or higher, the proportion of individuals with a bachelor’s degree or higher, and the unemployment rate of each county. The Texas Income dataset contains the per capita income, the total personal income, the median household income, and average annual pay of each county as well as the proportion of the population living in poverty and the proprotion of the population that is under 18 and living in poverty. I chose these two datasets because I am very interested to see if there are any relationships among the counties regarding levels of poverty, education level, income, or unemployment. The dataset also includes ranged levels of poverty and median household income for analysis purposes. Throughout my time in college I have studied much about disparities in resources and how those can perpetuate inequities so this data should provide insight into such. As of now, I believe there will be strong correlations with level of education and decreasing poverty/unemployment due to perpetuations in socioecnomic inequities.</p>
+<p>##MANOVA, ANOVA, and Post-Hoc T Tests</p>
+<pre class="r"><code>manpov &lt;- manova(cbind(HighSchoolGradorHigher, BachelorsDegreeorHigher, UnemploymentRate, PerCapitaIncome, TotalPersonalIncome, MedianHouseholdIncome, AverageAnnualPay, PopulationUnder18inPoverty)~rangedpoverty, data = TexasCountyData)
+summary(manpov)</code></pre>
+<pre><code>## Df Pillai approx F num Df den Df Pr(&gt;F)
+## rangedpoverty 2 0.80358 20.569 16 490 &lt; 2.2e-16 ***
+## Residuals 251
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>summary.aov(manpov)</code></pre>
+<pre><code>## Response HighSchoolGradorHigher :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## rangedpoverty 2 3823.9 1912.0 37.269 6.722e-15 ***
+## Residuals 251 12876.6 51.3
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Response BachelorsDegreeorHigher :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## rangedpoverty 2 3532.6 1766.31 42.088 &lt; 2.2e-16 ***
+## Residuals 251 10533.7 41.97
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Response UnemploymentRate :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## rangedpoverty 2 157.53 78.765 45.298 &lt; 2.2e-16 ***
+## Residuals 251 436.44 1.739
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Response PerCapitaIncome :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## rangedpoverty 2 7.0069e+09 3503461493 64.672 &lt; 2.2e-16
+***
+## Residuals 251 1.3597e+10 54172661
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Response TotalPersonalIncome :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## rangedpoverty 2 1.4927e+21 7.4633e+20 1.6971 0.1853
+## Residuals 251 1.1038e+23 4.3976e+20
+##
+## Response MedianHouseholdIncome :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## rangedpoverty 2 2.0071e+10 1.0036e+10 154.32 &lt; 2.2e-16
+***
+## Residuals 251 1.6323e+10 6.5031e+07
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Response AverageAnnualPay :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## rangedpoverty 2 2.1107e+09 1055374669 14.939 7.414e-07
+***
+## Residuals 251 1.7732e+10 70645630
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Response PopulationUnder18inPoverty :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## rangedpoverty 2 9909.5 4954.7 220.59 &lt; 2.2e-16 ***
+## Residuals 251 5637.7 22.5
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>pairwise.t.test(TexasCountyData$HighSchoolGradorHigher,TexasCountyData$rangedpoverty, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>##
+## Pairwise comparisons using t tests with pooled SD
+##
+## data: TexasCountyData$HighSchoolGradorHigher and
+TexasCountyData$rangedpoverty
+##
+## Low Medium
+## Medium 7.7e-05 -
+## High 7.3e-16 7.3e-06
+##
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(TexasCountyData$BachelorsDegreeorHigher,TexasCountyData$rangedpoverty, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>##
+## Pairwise comparisons using t tests with pooled SD
+##
+## data: TexasCountyData$BachelorsDegreeorHigher and
+TexasCountyData$rangedpoverty
+##
+## Low Medium
+## Medium 2.5e-10 -
+## High &lt; 2e-16 0.029
+##
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(TexasCountyData$UnemploymentRate,TexasCountyData$rangedpoverty, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>##
+## Pairwise comparisons using t tests with pooled SD
+##
+## data: TexasCountyData$UnemploymentRate and
+TexasCountyData$rangedpoverty
+##
+## Low Medium
+## Medium 0.00037 -
+## High &lt; 2e-16 2e-08
+##
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(TexasCountyData$PerCapitaIncome,TexasCountyData$rangedpoverty, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>##
+## Pairwise comparisons using t tests with pooled SD
+##
+## data: TexasCountyData$PerCapitaIncome and
+TexasCountyData$rangedpoverty
+##
+## Low Medium
+## Medium 1e-12 -
+## High &lt; 2e-16 0.00038
+##
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(TexasCountyData$MedianHouseholdIncome,TexasCountyData$rangedpoverty, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>##
+## Pairwise comparisons using t tests with pooled SD
+##
+## data: TexasCountyData$MedianHouseholdIncome and
+TexasCountyData$rangedpoverty
+##
+## Low Medium
+## Medium &lt; 2e-16 -
+## High &lt; 2e-16 7.2e-08
+##
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(TexasCountyData$AverageAnnualPay,TexasCountyData$rangedpoverty, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>##
+## Pairwise comparisons using t tests with pooled SD
+##
+## data: TexasCountyData$AverageAnnualPay and
+TexasCountyData$rangedpoverty
+##
+## Low Medium
+## Medium 0.0022 -
+## High 1.2e-07 0.0201
+##
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(TexasCountyData$PopulationUnder18inPoverty,TexasCountyData$rangedpoverty, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>##
+## Pairwise comparisons using t tests with pooled SD
+##
+## data: TexasCountyData$PopulationUnder18inPoverty and
+TexasCountyData$rangedpoverty
+##
+## Low Medium
+## Medium &lt;2e-16 -
+## High &lt;2e-16 &lt;2e-16
+##
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>1-.95^30</code></pre>
+<pre><code>## [1] 0.7853612</code></pre>
+<pre class="r"><code>.05/30</code></pre>
+<pre><code>## [1] 0.001666667</code></pre>
+<p>A one-way multivariate analysis of variance (MANOVA) was conducted to determine the effect of different levels of poverty (Low, Medium, High) on HighSchoolGradorHigher, BachelorsDegreeorHigher, UnemploymentRate, PerCapitaIncome, TotalPersonalIncome, MedianHouseholdIncome, AverageAnnualPay, and PopulationUnder18inPoverty. PopulationinPoverty was not used because RangedPoverty was included instead. Significant differences were found among the three levels of poverty on the dependent measures, Pillai = 0.804, pseudo F (16,490) = 20.569, and p &lt; 0.0001.
+Univariate analyses of variance (ANOVAs) for each dependent variable were conducted as follow-up tests to the MANOVA, using the Bonferroni method (new significance level = .05/30 = 0.0017) for controlling Type I error rates (before adjustment probability = 0.7853612) for multiple comparisons. The univariate ANOVAs for HighSchoolGradorHigher (p&lt;6.722e-15), BachelorsDegreeorHigher (p&lt;2.2e-16), UnemploymentRate (p&lt;2.2e-16), PerCapitaIncome (p&lt;2.2e-16), MedianHouseholdIncome (p&lt;2.2e-16), AverageAnnualPay (p&lt;7.414e-07), and PopulationUnder18inPoverty (p&lt;2.2e-16) were also significant. Only TotalPersonal Income was not found to be significant so no post hoc analysis was then performed for this variable.
+Post hoc analysis was performed conducting pairwise comparisons to determine which levels of poverty differed in HighSchoolGradorHigher, BachelorsDegreeorHigher, UnemploymentRate, PerCapitaIncome, MedianHouseholdIncome, AverageAnnualPay, and PopulationUnder18inPoverty. All three levels of poverty were found to differ significantly from each other in terms of HighSchoolGradorHigher, UnemploymentRate, PerCapitaIncome, MedianHouseholdIncome, and PopulationinPovertyUnder18 after adjusting for multiple comparisons (bonferroni) For BachelorsDegreeorHigher, significany differences in levels of poverty were seen between low and medium and low and high, and for AverageAnnualPay, significant differences in levels of poverty were seen between low and high.
+In total, 30 tests were performed (1 (MANOVA) + 8 (ANOVA) + 7*3(T-Test)).
+As for assumptions, the samples are not random because they encompass all Texas counties, some of the dependent variables are likely to be linearly related which violates two assumptions, but the other assumptions could be met.</p>
+<p>##Randomization Test</p>
+<pre class="r"><code>obs_F&lt;-45.298
+Fs&lt;-replicate(5000,{
+ new&lt;-TexasCountyData%&gt;%mutate(UnemploymentRate=sample(UnemploymentRate))
+ SSW&lt;- new%&gt;%group_by(rangedpoverty)%&gt;%summarize(SSW=sum((UnemploymentRate-mean(UnemploymentRate))^2))%&gt;%summarize(sum(SSW))%&gt;%pull
+ SSB&lt;- new%&gt;%mutate(mean=mean(UnemploymentRate))%&gt;%group_by(rangedpoverty)%&gt;%mutate(groupmean=mean(UnemploymentRate))%&gt;%
+ summarize(SSB=sum((mean-groupmean)^2))%&gt;%summarize(sum(SSB))%&gt;%pull
+ (SSB/2)/(SSW/57)
+})
+hist(Fs, prob=T); abline(v = obs_F, col=&quot;red&quot;,add=T)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-2-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>mean(Fs&gt;obs_F)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<p>H0: Mean county unemployment rate is equal across the three levels of poverty.
+HA: Mean county unemployment rate is not equal across the three levels of poverty.
+With mean(Fs&gt;obs_F) = 0, we reject the null and state that the mean county unemployment rate differs across the three levels of poverty.</p>
+<p>##Linear Regression</p>
+<pre class="r"><code>TexasCountyData$PopulationinPoverty_centered &lt;- TexasCountyData$PopulationinPoverty - mean(TexasCountyData$PopulationinPoverty, na.rm = T)
+TexasCountyData$UnemploymentRate_centered &lt;- TexasCountyData$UnemploymentRate - mean(TexasCountyData$UnemploymentRate, na.rm = T)
+fitbachdegree &lt;- lm(BachelorsDegreeorHigher ~ PopulationinPoverty_centered * UnemploymentRate_centered, data = TexasCountyData)
+summary(fitbachdegree)</code></pre>
+<pre><code>##
+## Call:
+## lm(formula = BachelorsDegreeorHigher ~
+PopulationinPoverty_centered *
+## UnemploymentRate_centered, data = TexasCountyData)
+##
+## Residuals:
+## Min 1Q Median 3Q Max
+## -18.3440 -3.5648 -0.9376 2.1936 26.7734
+##
+## Coefficients:
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) 17.67082 0.41766 42.309 &lt; 2e-16 ***
+## PopulationinPoverty_centered -0.67889 0.08997 -7.546
+8.36e-13 ***
+## UnemploymentRate_centered -1.10714 0.35490 -3.120
+0.002024 **
+## PopulationinPoverty_centered:UnemploymentRate_centered
+0.12321 0.03295 3.739 0.000229 ***
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Residual standard error: 6.17 on 250 degrees of freedom
+## Multiple R-squared: 0.3235, Adjusted R-squared: 0.3154
+## F-statistic: 39.85 on 3 and 250 DF, p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>new1&lt;-TexasCountyData
+new1$PopulationinPoverty_centered&lt;-mean(TexasCountyData$PopulationinPoverty_centered)
+new1$mean&lt;-predict(fitbachdegree,new1)
+new1$PopulationinPoverty_centered&lt;-mean(TexasCountyData$PopulationinPoverty_centered)+sd(TexasCountyData$PopulationinPoverty_centered)
+new1$plus.sd&lt;-predict(fitbachdegree,new1)
+new1$PopulationinPoverty_centered&lt;-mean(TexasCountyData$PopulationinPoverty_centered)-sd(TexasCountyData$PopulationinPoverty_centered)
+new1$minus.sd&lt;-predict(fitbachdegree,new1)
+newint&lt;-new1%&gt;%dplyr::select(BachelorsDegreeorHigher,UnemploymentRate_centered,mean,plus.sd,minus.sd)%&gt;%gather(PopulationinPoverty,value,-BachelorsDegreeorHigher,-UnemploymentRate_centered)
+
+mycols&lt;-c(&quot;#619CFF&quot;,&quot;#F8766D&quot;,&quot;#00BA38&quot;)
+names(mycols)&lt;-c(&quot;-1 sd&quot;,&quot;mean&quot;,&quot;+1 sd&quot;)
+mycols=as.factor(mycols)
+
+ggplot(TexasCountyData,aes(UnemploymentRate_centered,BachelorsDegreeorHigher),group=mycols)+geom_point()+geom_line(data=new1,aes(y=mean,color=&quot;mean&quot;))+geom_line(data=new1,aes(y=plus.sd,color=&quot;+1 sd&quot;))+geom_line(data=new1,aes(y=minus.sd,color=&quot;-1 sd&quot;))+scale_color_manual(values=mycols)+labs(color=&quot;Population in Poverty (cont)&quot;)+theme(legend.position=c(.9,.2))</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-3-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>resids&lt;-fitbachdegree$residuals
+bptest(fitbachdegree)</code></pre>
+<pre><code>## 
+##  studentized Breusch-Pagan test
+## 
+## data:  fitbachdegree
+## BP = 12.833, df = 3, p-value = 0.005013</code></pre>
+<pre class="r"><code>ks.test(resids, &quot;pnorm&quot;, mean=0, sd(resids)) </code></pre>
+<pre><code>## 
+##  One-sample Kolmogorov-Smirnov test
+## 
+## data:  resids
+## D = 0.12943, p-value = 0.0004027
+## alternative hypothesis: two-sided</code></pre>
+<pre class="r"><code>shapiro.test(resids)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  resids
+## W = 0.92553, p-value = 5.511e-10</code></pre>
+<pre class="r"><code>summary(fitbachdegree)$coef[,1:2]</code></pre>
+<pre><code>## Estimate Std. Error
+## (Intercept) 17.6708182 0.41765789
+## PopulationinPoverty_centered -0.6788906 0.08996978
+## UnemploymentRate_centered -1.1071384 0.35490325
+## PopulationinPoverty_centered:UnemploymentRate_centered
+0.1232117 0.03295247</code></pre>
+<pre class="r"><code>coeftest(fitbachdegree, vcov = vcovHC(fitbachdegree))[,1:2]</code></pre>
+<pre><code>## Estimate Std. Error
+## (Intercept) 17.6708182 0.38385474
+## PopulationinPoverty_centered -0.6788906 0.12277386
+## UnemploymentRate_centered -1.1071384 0.38597202
+## PopulationinPoverty_centered:UnemploymentRate_centered
+0.1232117 0.03337542</code></pre>
+<pre class="r"><code>fitbachdegree1 &lt;- lm(BachelorsDegreeorHigher ~ PopulationinPoverty_centered + UnemploymentRate_centered, data = TexasCountyData)
+summary(fitbachdegree1)</code></pre>
+<pre><code>##
+## Call:
+## lm(formula = BachelorsDegreeorHigher ~
+PopulationinPoverty_centered +
+## UnemploymentRate_centered, data = TexasCountyData)
+##
+## Residuals:
+## Min 1Q Median 3Q Max
+## -19.5795 -4.0355 -0.8763 2.5753 25.6847
+##
+## Coefficients:
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) 18.25709 0.39699 45.988 &lt; 2e-16 ***
+## PopulationinPoverty_centered -0.65979 0.09212 -7.162
+8.76e-12 ***
+## UnemploymentRate_centered -0.47625 0.32020 -1.487 0.138
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Residual standard error: 6.327 on 251 degrees of freedom
+## Multiple R-squared: 0.2857, Adjusted R-squared: 0.28
+## F-statistic: 50.19 on 2 and 251 DF, p-value: &lt; 2.2e-16</code></pre>
+<p>In the linear regression model created, when controlling unemployment rate and population in poverty, there is on average 17.671% of individuals in Texas Counties with a Bachelor’s degree or higher. When controlling for unemployment rate, for every 1 unit increase the percentage of people in poverty, the percentage of people with a Bachelor’s degree or higher decreased by .679%. When controlling for population in poverty, for every 1 unit increase the unemployment rate, the percentage of people with a Bachelor’s degree or higher decreased by 1.107%. Across +/-1 standard deviation from the mean of population in poverty of Texas counties, the effect of unemployment rate on the percentage of people with a Bachelor’s degree or higher increases as population in poverty decreases. The distribution failed all three tests, BP Test (p=.005), Kolmogorov-Smirnov Test (p=.0004), Shapiro-Wilk (p=5.5e-10), meaning that it is not homoskedastic, linear, or normally distributed. To correct for the heteroskedascity, robust SEs were calculated, which increased the SE of PopulationinPoverty_centered effect by about .3, the UnemploymentRate_centered effect by about .3, and the interaction by .04. The model explains a significant amount of variation (R-squared = .315) in percentage of individuals with a Bachelor’s degree or higher for Texas counties (df = 250, p &lt; 2.2e16).</p>
+<p>##Linear Regression with Bootstrapped SEs</p>
+<pre class="r"><code>set.seed(1234)
+
+boot_dat&lt;-TexasCountyData[sample(nrow(TexasCountyData),replace=TRUE),]
+
+samp_distn&lt;-replicate(5000, {
+ boot_dat&lt;-TexasCountyData[sample(nrow(TexasCountyData),replace=TRUE),]
+ fitbachdegree2 &lt;- lm(BachelorsDegreeorHigher ~ PopulationinPoverty_centered * UnemploymentRate_centered, data = boot_dat)
+ coef(fitbachdegree2)
+})
+
+samp_distn%&gt;%t%&gt;%as.data.frame%&gt;%summarize_all(sd)</code></pre>
+<pre><code>## (Intercept) PopulationinPoverty_centered
+UnemploymentRate_centered
+## 1 0.3842822 0.1193963 0.3744751
+## PopulationinPoverty_centered:UnemploymentRate_centered
+## 1 0.03562972</code></pre>
+<p>The newly created bootstrapped SEs are larger than the SEs was the previous linear regression but smaller than those from the robust SE model. Due to these SEs being smaller than the robust SEs, they have a larger t-value and smaller p-value.</p>
+<p>##Logistic Regression</p>
+<pre class="r"><code>class_diag&lt;-function(probs,truth){
+ tab&lt;-table(factor(probs&gt;.5,levels=c(&quot;FALSE&quot;,&quot;TRUE&quot;)),truth)
+ acc=sum(diag(tab))/sum(tab)
+ sens=tab[2,2]/colSums(tab)[2]
+ spec=tab[1,1]/colSums(tab)[1]
+ ppv=tab[2,2]/rowSums(tab)[2]
+ if(is.numeric(truth)==FALSE &amp; is.logical(truth)==FALSE) truth&lt;-as.numeric(truth)-1
+ #CALCULATE EXACT AUC
+ ord&lt;-order(probs, decreasing=TRUE)
+ probs &lt;- probs[ord]; truth &lt;- truth[ord]
+ TPR=cumsum(truth)/max(1,sum(truth))
+ FPR=cumsum(!truth)/max(1,sum(!truth))
+ dup&lt;-c(probs[-1]&gt;=probs[-length(probs)], FALSE)
+ TPR&lt;-c(0,TPR[!dup],1); FPR&lt;-c(0,FPR[!dup],1)
+ n &lt;- length(TPR)
+ auc&lt;- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+ data.frame(acc,sens,spec,ppv,auc)
+} 
+
+mean(TexasCountyData$PopulationinPoverty)</code></pre>
+<pre><code>## [1] 16.6311</code></pre>
+<pre class="r"><code>TexasCountyData &lt;- TexasCountyData %&gt;% mutate(binarypoverty = ifelse(PopulationinPoverty &gt; 16.6311,1,0))
+fit&lt;-glm(binarypoverty~UnemploymentRate+MedianHouseholdIncome,data=TexasCountyData,family=binomial(link=&quot;logit&quot;))
+coeftest(fit)</code></pre>
+<pre><code>##
+## z test of coefficients:
+##
+## Estimate Std. Error z value Pr(&gt;|z|)
+## (Intercept) 1.4404e+01 2.3775e+00 6.0584 1.375e-09 ***
+## UnemploymentRate 6.2513e-01 1.9916e-01 3.1388 0.001696
+**
+## MedianHouseholdIncome -3.6946e-04 5.1519e-05 -7.1713
+7.431e-13 ***
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>exp(coef(fit))</code></pre>
+<pre><code>## (Intercept) UnemploymentRate MedianHouseholdIncome
+## 1.801460e+06 1.868495e+00 9.996306e-01</code></pre>
+<pre class="r"><code>probs&lt;-predict(fit,type=&quot;response&quot;)
+class_diag(probs,TexasCountyData$binarypoverty)</code></pre>
+<pre><code>##         acc      sens     spec   ppv       auc
+## 1 0.8503937 0.8655462 0.837037 0.824 0.9418612</code></pre>
+<pre class="r"><code>#Confusion Martrix
+pred&lt;-ifelse(probs&gt;.5,1,0) 
+table(predictions=pred,truth=TexasCountyData$binarypoverty)%&gt;%addmargins</code></pre>
+<pre><code>##            truth
+## predictions   0   1 Sum
+##         0   113  16 129
+##         1    22 103 125
+##         Sum 135 119 254</code></pre>
+<pre class="r"><code>#plot density of log-odds (logit) by binary outcome variable
+data&lt;-TexasCountyData
+data$binarypoverty&lt;-as.factor(data$binarypoverty)
+data$logit&lt;-predict(fit,type=&quot;link&quot;)
+
+data%&gt;%ggplot()+geom_density(aes(logit,color=binarypoverty,fill=binarypoverty), alpha=.4)+
+theme(legend.position=c(.85,.85))+geom_vline(xintercept=0)+xlab(&quot;predictor (logit)&quot;)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-5-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#ROC Curve
+data$prob&lt;-predict(fit,type=&quot;response&quot;) 
+sens&lt;-function(p,data=data, y=binarypoverty) mean(data[data$binarypoverty==1,]$prob&gt;p)
+spec&lt;-function(p,data=data, y=binarypoverty) mean(data[data$binarypoverty==0,]$prob&lt;p)
+sensitivity&lt;-sapply(seq(0,1,.01),sens,data)
+specificity&lt;-sapply(seq(0,1,.01),spec,data)
+ROC1&lt;-data.frame(sensitivity,specificity,cutoff=seq(0,1,.01))
+ROC1$TPR&lt;-sensitivity
+ROC1$FPR&lt;-1-specificity
+ROC1%&gt;%ggplot(aes(FPR,TPR))+geom_path(size=1.5)+geom_segment(aes(x=0,y=0,xend=1,yend=1),lty=2)+
+ scale_x_continuous(limits = c(0,1))</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-5-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#AUC
+widths&lt;-diff(ROC1$FPR) #horizontal distances
+heights&lt;-vector() #sum of top and bottom vertical line in loop
+for(i in 1:100) heights[i]&lt;-ROC1$TPR[i]+ROC1$TPR[i+1]
+AUC&lt;-sum(heights*widths/2) #sum up areas of trapezoids
+AUC%&gt;%round(3)</code></pre>
+<pre><code>## [1] -0.942</code></pre>
+<pre class="r"><code>#10-fold
+set.seed(1234)
+k=10
+data1&lt;-TexasCountyData[sample(nrow(TexasCountyData)),] #put dataset in random order
+folds&lt;-cut(seq(1:nrow(TexasCountyData)),breaks=k,labels=F) #create folds
+diags&lt;-NULL
+for(i in 1:k){ # FOR EACH OF 10 FOLDS
+train&lt;-data1[folds!=i,] #CREATE TRAINING SET
+test&lt;-data1[folds==i,] #CREATE TESTING SET
+truth&lt;-test$binarypoverty
+
+fit&lt;- glm(binarypoverty~(UnemploymentRate+MedianHouseholdIncome),data=train,family=&quot;binomial&quot;)
+prob&lt;- predict(fit,newdata = test,type=&quot;response&quot;)
+
+diags&lt;-rbind(diags,class_diag(prob,truth)) 
+}
+apply(diags,2,mean)</code></pre>
+<pre><code>##       acc      sens      spec       ppv       auc 
+## 0.8496923 0.8674392 0.8317682 0.8370929 0.9387068</code></pre>
+<p>The logistic regression model predicts whether or not a county is above or below the median poverty percentage for Texas counties based on unemployment rate and median household income. For every 1 unit increase in unemployment rate, the odds of being below the median poverty percentage increases by 1.868. For every 1 unit increase in median household income, the odds of being below the median poverty changes by a factor of 0.9996. The accuracy of this model is .850, the sensitivity is .866, the specificity is .837, and the recall is .824. After generating an ROC curve and calculating the AUC, the model was seen to be a pretty good predictor of determining whether or not a county was above or below the median poverty percentage for Texas counties due to the higher TPR compared to FPR in the curve and the AUC value of 0.942. This AUC means that there is a probability of 0.942 that a randomly selected county that is below the median poverty level has a higher prediction than a randomly selected county that is above the median poverty level. After running the 10-Fold CV, the new out-of-sample accuracy is .847, the new sensitivity is .854, and the new recall is .814.</p>
+<p>##LASSO Regression</p>
+<pre class="r"><code>TexasCountyData1 &lt;- TexasCountyData %&gt;% dplyr::select (-c(County, UnemploymentRate_centered, PopulationinPoverty_centered, rangedpoverty, rangedincomes, PopulationinPoverty))
+
+fit&lt;-glm(binarypoverty~.,data=TexasCountyData1,family=&quot;binomial&quot;)
+x&lt;-model.matrix(fit)
+y&lt;-as.matrix(TexasCountyData1$binarypoverty)
+
+cv&lt;-cv.glmnet(x,y, family = &quot;binomial&quot;)
+lasso&lt;-glmnet(x,y,family=&quot;binomial&quot;,lambda=cv$lambda.1se)
+coef(lasso)</code></pre>
+<pre><code>## 10 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                                       s0
+## (Intercept)                -1.740563e+00
+## (Intercept)                 .           
+## HighSchoolGradorHigher      .           
+## BachelorsDegreeorHigher    -3.617427e-02
+## UnemploymentRate            .           
+## PerCapitaIncome            -1.886166e-05
+## TotalPersonalIncome         .           
+## MedianHouseholdIncome      -7.705622e-05
+## AverageAnnualPay            .           
+## PopulationUnder18inPoverty  2.704861e-01</code></pre>
+<pre class="r"><code>set.seed(1234)
+k=10 
+data1&lt;-TexasCountyData1[sample(nrow(TexasCountyData1)),] #randomly order rows
+folds&lt;-cut(seq(1:nrow(TexasCountyData1)),breaks=k,labels=F) #create folds
+diags&lt;-NULL
+for(i in 1:k){
+ train&lt;-data1[folds!=i,]
+ test&lt;-data1[folds==i,]
+ truth&lt;-test$binarypoverty
+ fit&lt;-glm(binarypoverty~BachelorsDegreeorHigher+PerCapitaIncome+MedianHouseholdIncome + PopulationUnder18inPoverty,data=train)
+ probs&lt;-predict(fit,newdata = test,type=&quot;response&quot;)
+ diags&lt;-rbind(diags,class_diag(probs,truth))
+}
+diags%&gt;%summarize_all(mean)</code></pre>
+<pre><code>##         acc      sens      spec       ppv       auc
+## 1 0.9095385 0.8867366 0.9234116 0.9227381 0.9544631</code></pre>
+<p>After running the LASSO regression, BachelorsDegreeorHigher, PerCapitaIncome, MedianHouseholdIncome, and PopulationUnder18inPoverty were retained as the most accurate predictors of whether or not a county is above or below the median poverty percentage. Comparing the out-of-sample accuracies of this 10-Fold CV with that in the previous question, the new accuracy from the LASSO regression CV (.902) is about .055 higher than the previous logistic regression CV (.847).</p>

@@ -1,0 +1,140 @@
+---
+title: "Project1"
+author: "Michael Wright"
+date: "10/17/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+The two datasets included in this project are Texas Education and Employment by county (CountyEducationEmployment) and Texas Income by county (CountyIncome), both obtained from the Texas Association of Counties. The Texas Education and Employment dataset contains the proportion of individuals in each county that have obtained a high school degree or higher, the proportion of individuals with a bachelor's degree or higher, and the unemployment rate of each county. The Texas Income dataset contains the per capita income, the total personal income, the median household income, and average annual pay of each county as well as the proportion of the population living in poverty and the proprotion of the population that is under 18 and living in poverty. 
+
+I chose these two datasets because I am very interested to see if there are any relationships among the counties regarding levels of poverty, education level, income, or unemployment. Throughout my time in college I have studied much about disparities in resources and how those can perpetuate inequities so this data should provide insight into such. As of now, I believe there will be strong correlations with level of education and decreasing poverty/unemployment due to perpetuations in socioecnomic inequities. 
+
+```{r}
+library(readxl)
+CountyEducationEmployment <- read_excel("~/Desktop/CountyEducationEmployment.xlsx")
+head(CountyEducationEmployment)
+
+library(readxl)
+CountyIncome <- read_excel("~/Desktop/Senior Year/CountyIncome.xlsx")
+head(CountyIncome)
+
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+```
+
+## Tidying
+```{r tidying}
+countyincomeuntidy <- CountyIncome %>% pivot_longer(c("PerCapitaIncome", "TotalPersonalIncome"), names_to = "names", values_to = "values")
+countyincometidy <- countyincomeuntidy %>% pivot_wider(names_from = "names", values_from = "values")
+countyeduemployuntidy <- CountyEducationEmployment %>% pivot_longer(c("HighSchoolGradorHigher", "BachelorsDegreeorHigher", "UnemploymentRate"), names_to = "names", values_to = "values")
+countyeduemplytidy <- countyeduemployuntidy %>% pivot_wider(names_from = "names", values_from = "values")
+```
+The datasets were both already tidy from the source so my first step was to untidy one of them. I began with the CountyIncome dataset and chose two variables to untidy: per capita income and total personal income. I used the pivot_longer function to combine these two variables into a "names" columns that included the variable name and then a "values" column that had the corresponding amount. In order to retidy the dataset, I used the pivot_wider function to then separate per capita income and total personal income back into respective columns with their values. I utilized nearly the same steps to untidy and retidy the CountyEducationEmployment dataset. I first used pivot_longer to combine each of the three columns: HighSchoolGradorHigher, BachelorsDegreeorHigher, and UnemploymentRate, into a "names" column and their corresponding proportions into a "values" column. To retidy them, I again used the pivot_wider function to separate them back into their own columns. 
+
+## Joining/Merging
+```{r join/merge}
+alldata <- CountyEducationEmployment %>% full_join(CountyIncome, by = "County")
+alldata$PopulationinPoverty <- as.numeric(alldata$PopulationinPoverty)
+alldata$HighSchoolGradorHigher <- as.numeric(alldata$HighSchoolGradorHigher)
+alldata$BachelorsDegreeorHigher <- as.numeric(alldata$BachelorsDegreeorHigher)
+alldata$UnemploymentRate <- as.numeric(alldata$UnemploymentRate)
+alldata$PerCapitaIncome <- as.numeric(alldata$PerCapitaIncome)
+alldata$TotalPersonalIncome <- as.numeric(alldata$TotalPersonalIncome)
+alldata$MedianHouseholdIncome <- as.numeric(alldata$MedianHouseholdIncome)
+alldata$AverageAnnualPay <- as.numeric(alldata$AverageAnnualPay)
+alldata$PopulationUnder18inPoverty <- as.numeric(alldata$PopulationUnder18inPoverty)
+```
+Due to the fact that both datasets have information on the same list of counties, I used full_join to combine them into a complete dataset named "alldata." Using left_join or right_join would have yieleded the same results. Due to both datasets being complete, no rows were dropped during this process. Once the data was combined, I went through each column and used the as.numeric function to transform the values into numerical values due to R not recognizing them as such. 
+
+##Wrangling
+```{r wrangling}
+#new variable with mutate
+alldata %>% mutate(Personal_Income_Prop = TotalPersonalIncome/sum(TotalPersonalIncome)) %>% select(County, Personal_Income_Prop) %>% glimpse()
+#creating categorical variables from Median Household Income and Poverty Rates
+quantile(alldata$MedianHouseholdIncome, probs = c(0, 1/3, 2/3, 1))
+quantile(as.numeric(alldata$PopulationinPoverty), probs = c(0, 1/3, 2/3, 1))
+incomecatdata <- alldata %>% mutate(rangedincomes = cut(MedianHouseholdIncome, breaks =c(-Inf, 42076.33, 51388.0, Inf), labels = c("Low", "Medium", "High"))) %>% mutate(rangedpoverty = cut(PopulationinPoverty, breaks = c(-Inf, 14.23333, 18.06667, Inf), labels = c("Low", "Medium", "High")))
+#1 average unemployment rate by percent in pvoerty
+incomecatdata %>% select(c(rangedpoverty, UnemploymentRate)) %>% group_by(rangedpoverty) %>% summarize(mean_unemployment=mean(UnemploymentRate))
+#2 average percentage of high school grad or higher by poverty
+incomecatdata %>% group_by(rangedpoverty) %>% summarize(mean_HSgrad=mean(HighSchoolGradorHigher))
+#3 average percentage of bachelors degree or higher by poverty
+incomecatdata %>% group_by(rangedpoverty) %>% summarize(mean_bachgrad=mean(BachelorsDegreeorHigher))
+#4 per capita income by poverty
+incomecatdata %>% group_by(rangedpoverty) %>% summarize(mean_pcincome=mean(PerCapitaIncome))
+#5 percentage of under 18 in poverty by poverty
+incomecatdata %>% group_by(rangedpoverty) %>% summarize(mean_under18poverty=mean(PopulationUnder18inPoverty))
+#6 unemployment rate by median household income
+incomecatdata %>% group_by(rangedincomes) %>% summarize(mean_unemployment=mean(UnemploymentRate))
+#7 average percentage of high school grad or higher by median household income
+incomecatdata %>% group_by(rangedincomes) %>% summarize(mean_HSgrad=mean(HighSchoolGradorHigher))
+#8 average percentange of bachelors degree or higher by median household income
+incomecatdata %>% group_by(rangedincomes) %>% summarize(mean_bachgrad=mean(BachelorsDegreeorHigher))
+#9 population in poverty by median household income
+incomecatdata %>% group_by(rangedincomes) %>% summarize(mean_popinpoverty=mean(PopulationinPoverty))
+#10 population under 18 in poverty by median household income
+incomecatdata %>% group_by(rangedincomes, rangedpoverty) %>% summarize(mean_under18inpoverty=mean(PopulationUnder18inPoverty)) %>% arrange(mean_under18inpoverty)
+#filter for high poverty
+incomecatdata %>% filter(rangedpoverty == "High") %>% group_by(rangedincomes) %>% summarize(mean_bachgrad = mean(BachelorsDegreeorHigher))
+```
+Using the mutate function, I created the variable Personal_Income_Prop, which is a function of the Total Personal Income column, showing the proportion of personal income that each county has in relation to the entire personal income for Texas. Next, I created categorical variables out of Median Household Income and Population in Poverty by calculating quantiles to create "Low", "Medium", and "High" levels for both so I could then go through with summary statistics. To begin, I calculated the mean unemployment rates by level of poverty: counties with low levels of poverty have an average unemployment rate of 3.59, counties with medium poverty have an unemployment rate of 4.33, and counties with high poverty, have an unemployment rate of 5.50. The average percentage of individuals with a high school degree or higher for low poverty counties is 84.1%, 79.68% for medium poverty counties, and 74.63% for high poverty counties. Counties with low levels of poverty have an average of 23.36% of individuals with a bachelor's degree or higher, 16.79% with a bachelor's or higher in medium poverty counties, and 14.60% with a bachelor's or higher in counties with high levels of poverty. The average per capita income for counties with low, medium, and high levels of poverty are $48256.52, $39747.44, and $35672.09, respectively. Counties with low poverty have an average of 16.84% of people under 18 in poverty, counties with medium poverty have an average of 24.29%, and counties with high poverty have an average of 32.11%. As seen, as level of poverty increases in Texas counties, unemployment rates increase, education levels decrease, per capita income decreases, and the percentage of those under 18 in poverty increases. 
+
+Next, I looked at the differing levels of median household income for the counties. For counties with low median household incomes the average rate of unemployment is 5.34, medium household income counties have a rate of 4.38, and high income counties have a rate of 3.81. The average percentage of individuals with a high school degree or higher is 74.09% for low income counties, 80.07% for medium income counties, and 83.55% for high income counties. The average percentage of individuals with a bachelor's degree or higher for low income counties is 14.78%, 16.95% for medium income counties, and 22.78% for high income counties. For counties with low median household incomes the average percentage of population in poverty is 21.96%, counties with medium household incomes have an average of 16.81%, and counties with high household incomes have an average of 11.74%. Looking at both county median household income levels and poverty levels for average percentage of individuals under 18 in poverty, counties with high income and low poverty had the lowest average of 15.85% and counties with low income and, surprisingly, low poverty had the highest average of 34.80%, but counties with low income and high poverty were close behind with an average of 34.35% percent. Including only counties with high levels of poverty, those with low average incomes had an average percentage of the population with a bachelor's degree or higher of 13.95%, counties with medium incomes had an average of 16.07%, and no counties that were included to have high levels of poverty had a high median household income. Overall it is seen that as median household income increases, unemployment decreases, education levels increase, and poverty decreases. 
+
+## Visualizing
+```{r visualizing data, fig.width=12}
+ggplot(alldata, aes(x = MedianHouseholdIncome))+geom_point(aes(y=PopulationinPoverty, size = (alldata$UnemploymentRate)), shape = 21, color = "black", fill = "blue") + scale_size_continuous(name = "UnemploymentRate") + ggtitle("Proportion of Population in Poverty by Median Household Income for Texas Counties") + xlab("County's Median Household Income in $1000s") + ylab("County's Percentage (%) of Population in Poverty") + scale_x_continuous(breaks = seq(0,100000, 5000), labels = seq(0,100, 5))
+
+alldatapivot <- alldata
+alldatapivot <- alldatapivot %>% pivot_longer(c("PopulationinPoverty", "PopulationUnder18inPoverty", "UnemploymentRate", "BachelorsDegreeorHigher", "HighSchoolGradorHigher"), names_to = "names", values_to = "values")
+       
+ggplot(alldatapivot, aes(x = names))+
+geom_bar(aes(y=values), stat="summary", fun.y="mean", fill=c("red","orange","yellow","blue", "purple"))+theme(axis.text.x = element_text(angle=45, hjust=1, size=10))+ ggtitle("Averaged Education, Poverty, and Employment Statistics of Texas Counties")+ylab("Percentage of the Population (%)") + xlab("Averaged County Data")
+```
+The scatter plot, "Proportion of Population in Poverty by Meidan Household Income for Texas Counties," shows a strong negative correlation between poverty and median household income across the counties. Additionally, the use of unemployment rate for the sizing of the of the points on the plot demonstrate a similar correlation with the largest points near the higher poverty levels and lower median household incomes and the smaller points towards the higher median income levels and lower poverty. Moreover, the majority of the points seem to be centered around 15-20% people in poverty and a median household income of $40,000-$50,000. The relationships seen are as I expected - increasing poverty relates to higher levels on unemployment in those counties and if more people in poverty and unemployed, the median household income should decrease as well. 
+
+As for the bar chart, it is difficult to ascertain any kind of relationships among the variables used but it is good to see the averaged statistics for the counties of Texas. One interesting observation from this chart is the difference in the percentage of the population under 18 that is in poverty compared to the percentage of people in poverty in general. This does make sense due to individuals under 18 being less able to hold jobs that could make enough money to overcome poverty as well as the children of adults in poverty being included as well, but this is a realization that demonstrates the issues with young people not being able to be as successful as their parents in today's world. Additionally, the chart shows an interesting high level of people who have obtained a high school degree or above as compared to those who have obtained a bachelor's degree or higher. Although the high school degree or higher includes those with a bachelor degree, it represents the difficulty for individuals to acheive college educations in a time during which prices are ever increasing. 
+
+## Dimensionality Reduction
+```{r dimensionality reduction}
+alldata_numeric <- alldata %>% select_if(is.numeric) %>% scale
+rownames(alldata_numeric) <- alldata$County
+alldata_pca <- princomp(alldata_numeric)
+names(alldata_pca)
+summary(alldata_pca, loadings = T)
+eigval <- alldata_pca$sdev^2
+varprop=round(eigval/sum(eigval),2)
+```
+
+In order to conduct dimensionality reduction, I began by selecting and scaling the numerical variables. Once completed, I was able to run a summary to look at the standard deviation, proportion of variance, and cumulative proportion of the principle components.
+
+```{r dimensionality reduction cont.1}
+ggplot() + geom_bar(aes(y=varprop, x=1:9), stat = "identity") + xlab("") + geom_path(aes(y=varprop, x=1:9)) + geom_text(aes(x=1:9, y=varprop, label = round(varprop,2)), vjust=1, col="white", size=5) + scale_y_continuous(breaks = seq(0,.6,.2), labels = scales::percent) + scale_x_continuous(breaks=1:10)
+```
+Using the scree plot, the first four principle components sum to greater than .8 of the total variance proportion so I will use those. 
+
+```{r dimensional reduction cont.2}
+library(ggrepel)
+alldata_df <- incomecatdata %>% mutate(PC1 = alldata_pca$scores[,1], PC2 = alldata_pca$scores[,2], PC3 = alldata_pca$scores[,3], PC4 = alldata_pca$scores[,4])
+ggplot(alldata_df, aes(PC1, PC2, color = rangedpoverty)) + geom_point() + geom_text_repel(aes(label=County), color = "black")
+ggplot(alldata_df, aes(PC3, PC4, color = rangedpoverty)) + geom_point() + geom_text_repel(aes(label=County), color = "black")
+```
+
+PC1 seems to separate the data based on differing poverty levels with the counties with high levels of poverty on the more positive side of PC1 and counties with low poverty on the more negative side of PC1. PC2 on the other hand appears to separate the counties based on income levels, but this is less clear in the plot.
+
+The plot containing PC3 and PC4 do not have any recognizable separations. 
+
+```{r dimensional reduction cont.3}
+alldata_pca$loadings[1:9,1:2]%>%as.data.frame%>%rownames_to_column %>% ggplot()+geom_hline(aes(yintercept=0),lty=2)+geom_vline(aes(xintercept=0),lty=2)+ylab("PC2")+xlab("PC1")+geom_segment(aes(x=0,y=0,xend=Comp.1,yend=Comp.2), arrow=arrow(),col="red")+geom_label(aes(x=Comp.1*1.1,y=Comp.2*1.1,label=rowname))
+
+alldata_pca$loadings[1:9,3:4]%>%as.data.frame%>%rownames_to_column %>% ggplot()+geom_hline(aes(yintercept=0),lty=2)+geom_vline(aes(xintercept=0),lty=2)+ylab("PC4")+xlab("PC3")+geom_segment(aes(x=0,y=0,xend=Comp.3,yend=Comp.4), arrow=arrow(),col="red")+geom_label(aes(x=Comp.3*1.1,y=Comp.4*1.1,label=rowname))
+```
+In the plot comparing PC1 and PC2, unemployment rate, percentage of people in poverty, and percentage of people under 18 appear to have a correlation, which makes sense because with more unemployment, there would be a a higher level of poverty. Additionally, total personal income and average annual pay are correlated, which is expected as annual pay increases, total personal income would increase as well. Moreover, median household income, percentage of people with a bachelor's degree or higher, and per capita income seem to have a strong correlation, alluding to higher levels of education leading to better paying jobs. Relating to the principle components, unemployment rate and poverty levels have the most positive values for PC1, relating to the face that PC1 is associated with poverty, while all other variables have a negative value for PC1. As for PC2, every variable besides percentage of people with a high school degree or higher have a positive value with average annual pay and total personal income having the most positive values.
+
+In the plot comparing PC3 and PC4, total personal income, percentage of population under 18 in poverty, and percentage of population in poverty seem to have the strongest correlation. The percentage of people with a bachelor's degree or higher does seem to be correlated with the previously mentioned variables yet this relationship is weaker. The rest of the variables do not seem to have any visible correlation. 

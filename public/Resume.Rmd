@@ -1,0 +1,25 @@
+---
+title: "Resume"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# **Education**
+## The University of Texas at Austin, Austin, TX
+### Bachelor of Science and Arts in Biology
+### Business of Healthcare Certificate
+### GPA: 3.945
+
+# **Work Experience**
+* Gene Networks Lab
+  + Mentored students through their research projects
+* The Princeton Review
+  + Instructed students in Critical Analysis and Reasoning Skills and General Chemistry
+
+# **Volunteering**
+* Dell Children's Medical Center
+  + Aided Emergency Department staff with day-to-day responsibilities
+
