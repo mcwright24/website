@@ -1,7 +1,7 @@
 ---
 title: 'Project 2: Modeling, Testing, and Predicting'
 author: "Michael Wright"
-date: '11/25/19'
+date: '2019-11-25'
 output:
   html_document:
     toc: yes
@@ -57,10 +57,10 @@ alldata$PopulationUnder18inPoverty <- as.numeric(alldata$PopulationUnder18inPove
 TexasCountyData <- alldata %>% mutate(rangedincomes = cut(MedianHouseholdIncome, breaks =c(-Inf, 42076.33, 51388.0, Inf), labels = c("Low", "Medium", "High"))) %>% mutate(rangedpoverty = cut(PopulationinPoverty, breaks = c(-Inf, 14.23333, 18.06667, Inf), labels = c("Low", "Medium", "High")))
 ```
 
-##Introduction
+## Introduction
 The dataset I used, TexasCountyData, was created by merging the data from Texas Education and Employment by county (CountyEducationEmployment) and Texas Income by county (CountyIncome), both obtained from the Texas Association of Counties. The Texas Education and Employment dataset contains the proportion of individuals in each county that have obtained a high school degree or higher, the proportion of individuals with a bachelor's degree or higher, and the unemployment rate of each county. The Texas Income dataset contains the per capita income, the total personal income, the median household income, and average annual pay of each county as well as the proportion of the population living in poverty and the proprotion of the population that is under 18 and living in poverty. I chose these two datasets because I am very interested to see if there are any relationships among the counties regarding levels of poverty, education level, income, or unemployment. The dataset also includes ranged levels of poverty and median household income for analysis purposes. Throughout my time in college I have studied much about disparities in resources and how those can perpetuate inequities so this data should provide insight into such. As of now, I believe there will be strong correlations with level of education and decreasing poverty/unemployment due to perpetuations in socioecnomic inequities.
 
-##MANOVA, ANOVA, and Post-Hoc T Tests
+## MANOVA, ANOVA, and Post-Hoc T Tests
 ```{R}
 manpov <- manova(cbind(HighSchoolGradorHigher, BachelorsDegreeorHigher, UnemploymentRate, PerCapitaIncome, TotalPersonalIncome, MedianHouseholdIncome, AverageAnnualPay, PopulationUnder18inPoverty)~rangedpoverty, data = TexasCountyData)
 summary(manpov)
@@ -83,7 +83,7 @@ Post hoc analysis was performed conducting pairwise comparisons to determine whi
 In total, 30 tests were performed (1 (MANOVA) + 8 (ANOVA) + 7*3(T-Test)). 
 As for assumptions, the samples are not random because they encompass all Texas counties, some of the dependent variables are likely to be linearly related which violates two assumptions, but the other assumptions could be met.
 
-##Randomization Test
+## Randomization Test
 ```{R}
 obs_F<-45.298
 Fs<-replicate(5000,{
@@ -100,7 +100,7 @@ H0: Mean county unemployment rate is equal across the three levels of poverty.
 HA: Mean county unemployment rate is not equal across the three levels of poverty.
 With mean(Fs>obs_F) = 0, we reject the null and state that the mean county unemployment rate differs across the three levels of poverty.
 
-##Linear Regression
+## Linear Regression
 ```{R}
 TexasCountyData$PopulationinPoverty_centered <- TexasCountyData$PopulationinPoverty - mean(TexasCountyData$PopulationinPoverty, na.rm = T)
 TexasCountyData$UnemploymentRate_centered <- TexasCountyData$UnemploymentRate - mean(TexasCountyData$UnemploymentRate, na.rm = T)
@@ -135,7 +135,7 @@ summary(fitbachdegree1)
 ```
 In the linear regression model created, when controlling unemployment rate and population in poverty, there is on average 17.671% of individuals in Texas Counties with a Bachelor's degree or higher. When controlling for unemployment rate, for every 1 unit increase the percentage of people in poverty, the percentage of people with a Bachelor's degree or higher decreased by .679%. When controlling for population in poverty, for every 1 unit increase the unemployment rate, the percentage of people with a Bachelor's degree or higher decreased by 1.107%. Across +/-1 standard deviation from the mean of population in poverty of Texas counties, the effect of unemployment rate on the percentage of people with a Bachelor's degree or higher increases as population in poverty decreases. The distribution failed all three tests, BP Test (p=.005), Kolmogorov-Smirnov Test (p=.0004), Shapiro-Wilk (p=5.5e-10), meaning that it is not homoskedastic, linear, or normally distributed. To correct for the heteroskedascity, robust SEs were calculated, which increased the SE of PopulationinPoverty_centered effect by about .3, the UnemploymentRate_centered effect by about .3, and the interaction by .04. The model explains a significant amount of variation (R-squared = .315) in percentage of individuals with a Bachelor's degree or higher for Texas counties (df = 250, p < 2.2e16). 
 
-##Linear Regression with Bootstrapped SEs
+## Linear Regression with Bootstrapped SEs
 ```{R}
 set.seed(1234)
 
@@ -151,7 +151,7 @@ samp_distn%>%t%>%as.data.frame%>%summarize_all(sd)
 ```
 The newly created bootstrapped SEs are larger than the SEs was the previous linear regression but smaller than those from the robust SE model. Due to these SEs being smaller than the robust SEs, they have a larger t-value and smaller p-value.
 
-##Logistic Regression
+## Logistic Regression
 ```{R}
 class_diag<-function(probs,truth){
  tab<-table(factor(probs>.5,levels=c("FALSE","TRUE")),truth)
@@ -231,7 +231,7 @@ apply(diags,2,mean)
 ```
 The logistic regression model predicts whether or not a county is above or below the median poverty percentage for Texas counties based on unemployment rate and median household income. For every 1 unit increase in unemployment rate, the odds of being below the median poverty percentage increases by 1.868. For every 1 unit increase in median household income, the odds of being below the median poverty changes by a factor of 0.9996. The accuracy of this model is .850, the sensitivity is .866, the specificity is .837, and the recall is .824. After generating an ROC curve and calculating the AUC, the model was seen to be a pretty good predictor of determining whether or not a county was above or below the median poverty percentage for Texas counties due to the higher TPR compared to FPR in the curve and the AUC value of 0.942. This AUC means that there is a probability of 0.942 that a randomly selected county that is below the median poverty level has a higher prediction than a randomly selected county that is above the median poverty level. After running the 10-Fold CV, the new out-of-sample accuracy is .847, the new sensitivity is .854, and the new recall is .814.
 
-##LASSO Regression
+## LASSO Regression
 ```{R}
 TexasCountyData1 <- TexasCountyData %>% dplyr::select (-c(County, UnemploymentRate_centered, PopulationinPoverty_centered, rangedpoverty, rangedincomes, PopulationinPoverty))
 

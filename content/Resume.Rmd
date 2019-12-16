@@ -8,12 +8,14 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+# **About Me**
+Raised in Colleyville, Texas, I am currently a 4th year Biology student at UT Austin. Growing up, I always had a passion for medicine and am now in the process of interviewing and waiting on acceptances from Medical Schools. I hope to one day work as an Emergency Medicine Physician and also use my passion for business to better hospital operations.
 
 # **Education**
 ## The University of Texas at Austin, Austin, TX
-### Bachelor of Science and Arts in Biology
-### Business of Healthcare Certificate
-### GPA: 3.945
+* Bachelor of Science and Arts in Biology
+* Business of Healthcare Certificate
+* GPA: 3.945
 
 # **Work Experience**
 * Gene Networks Lab

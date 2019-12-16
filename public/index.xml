@@ -26,7 +26,26 @@
       <pubDate>Sun, 15 Dec 2019 00:00:00 +0000</pubDate>
       
       <guid>/resume/</guid>
-      <description>Education The University of Texas at Austin, Austin, TX Bachelor of Science and Arts in Biology  Business of Healthcare Certificate  GPA: 3.945    Work Experience  Gene Networks Lab  Mentored students through their research projects  The Princeton Review  Instructed students in Critical Analysis and Reasoning Skills and General Chemistry  Dell Children’s Medical Center  Aided Emergency Department staff with day-to-day responsibilities    Interests  Healthcare Dallas Mavericks Biology   Skills  CPR Certified Programming Languages: Excel, Python, R Certified MCAT Instructor   Accomplishments  Distinguished College Scholar Health Science Scholars Honors Biology Scholar  https://www.</description>
+      <description>About Me Raised in Colleyville, Texas, I am currently a 4th year Biology student at UT Austin. Growing up, I always had a passion for medicine and am now in the process of interviewing and waiting on acceptances from Medical Schools. I hope to one day work as an Emergency Medicine Physician and also use my passion for business to better hospital operations.
+ Education The University of Texas at Austin, Austin, TX  Bachelor of Science and Arts in Biology Business of Healthcare Certificate GPA: 3.</description>
+    </item>
+    
+    <item>
+      <title>Project 2: Modeling, Testing, and Predicting</title>
+      <link>/project2/</link>
+      <pubDate>Mon, 25 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/project2/</guid>
+      <description>Introduction The dataset I used, TexasCountyData, was created by merging the data from Texas Education and Employment by county (CountyEducationEmployment) and Texas Income by county (CountyIncome), both obtained from the Texas Association of Counties. The Texas Education and Employment dataset contains the proportion of individuals in each county that have obtained a high school degree or higher, the proportion of individuals with a bachelor’s degree or higher, and the unemployment rate of each county.</description>
+    </item>
+    
+    <item>
+      <title>Project1</title>
+      <link>/project1_sds348/</link>
+      <pubDate>Thu, 17 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/project1_sds348/</guid>
+      <description>Introduction The two datasets included in this project are Texas Education and Employment by county (CountyEducationEmployment) and Texas Income by county (CountyIncome), both obtained from the Texas Association of Counties. The Texas Education and Employment dataset contains the proportion of individuals in each county that have obtained a high school degree or higher, the proportion of individuals with a bachelor’s degree or higher, and the unemployment rate of each county.</description>
     </item>
     
     <item>
@@ -39,24 +58,6 @@
   Project 1: (Data Wrangling and Exploratory Analysis)
   Project 2: Modeling, Inference, Prediction
   </description>
-    </item>
-    
-    <item>
-      <title>Project 2: Modeling, Testing, and Predicting</title>
-      <link>/project2/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/project2/</guid>
-      <description>##Introduction The dataset I used, TexasCountyData, was created by merging the data from Texas Education and Employment by county (CountyEducationEmployment) and Texas Income by county (CountyIncome), both obtained from the Texas Association of Counties. The Texas Education and Employment dataset contains the proportion of individuals in each county that have obtained a high school degree or higher, the proportion of individuals with a bachelor’s degree or higher, and the unemployment rate of each county.</description>
-    </item>
-    
-    <item>
-      <title>Project1</title>
-      <link>/project1_sds348/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/project1_sds348/</guid>
-      <description>Introduction The two datasets included in this project are Texas Education and Employment by county (CountyEducationEmployment) and Texas Income by county (CountyIncome), both obtained from the Texas Association of Counties. The Texas Education and Employment dataset contains the proportion of individuals in each county that have obtained a high school degree or higher, the proportion of individuals with a bachelor’s degree or higher, and the unemployment rate of each county.</description>
     </item>
     
   </channel>

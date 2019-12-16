@@ -1,7 +1,7 @@
 ---
 title: "Project1"
 author: "Michael Wright"
-date: "10/17/2019"
+date: "2019-10-17"
 output: html_document
 ---
 
@@ -52,7 +52,7 @@ alldata$PopulationUnder18inPoverty <- as.numeric(alldata$PopulationUnder18inPove
 ```
 Due to the fact that both datasets have information on the same list of counties, I used full_join to combine them into a complete dataset named "alldata." Using left_join or right_join would have yieleded the same results. Due to both datasets being complete, no rows were dropped during this process. Once the data was combined, I went through each column and used the as.numeric function to transform the values into numerical values due to R not recognizing them as such. 
 
-##Wrangling
+## Wrangling
 ```{r wrangling}
 #new variable with mutate
 alldata %>% mutate(Personal_Income_Prop = TotalPersonalIncome/sum(TotalPersonalIncome)) %>% select(County, Personal_Income_Prop) %>% glimpse()
