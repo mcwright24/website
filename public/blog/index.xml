@@ -17,7 +17,7 @@
       <pubDate>Sun, 15 Dec 2019 00:00:00 +0000</pubDate>
       
       <guid>/blog/currently-in-class/</guid>
-      <description></description>
+      <description>Needleman-Wunsch Algorithm  We use this to score alignments Here is an example from class on how to do this  sequence 1 = “ACGCTTACCG” sequence 2 = “AGCCTACCCC”  Without the help of these functions, you would have to score alignments by hand like this:  seq1=&amp;quot;ACGCTTACCG&amp;quot; seq2=&amp;quot;AGCCTACCCC&amp;quot; def match_fun(a,b): # Helper function to define match/mismatch scores if a==b: score=1 #match score else: score=-1 #mismatch score return score def needleman(seq1,seq2,gap_penalty=-1): # Needleman-Wunsch algorithm in a funct m=len(seq1) #length of horizontal sequence n=len(seq2) #length of vertical sequence score=np.</description>
     </item>
     
   </channel>

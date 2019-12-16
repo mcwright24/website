@@ -1,5 +1,7 @@
 ---
 title: "Resume"
+author: "Michael Wright"
+date: "2019-12-15"
 output: html_document
 ---
 
@@ -18,8 +20,23 @@ knitr::opts_chunk$set(echo = TRUE)
   + Mentored students through their research projects
 * The Princeton Review
   + Instructed students in Critical Analysis and Reasoning Skills and General Chemistry
-
-# **Volunteering**
 * Dell Children's Medical Center
   + Aided Emergency Department staff with day-to-day responsibilities
+
+# **Interests**
+* Healthcare
+* Dallas Mavericks
+* Biology
+
+# **Skills**
+* CPR Certified
+* Programming Languages: Excel, Python, R
+* Certified MCAT Instructor
+
+# **Accomplishments**
+* Distinguished College Scholar
+* Health Science Scholars Honors
+* Biology Scholar
+  
+<https://www.linkedin.com/in/michael-wright-407344158/>
 
